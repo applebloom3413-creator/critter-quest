@@ -1,0 +1,4 @@
+# test screenshots from development
+snapshots/
+# local Claude settings
+.claude/

@@ -1,0 +1,53 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Art preview</title>
+<style>body{background:#222;color:#ccc;font-family:sans-serif;margin:16px}canvas{image-rendering:pixelated;margin:4px;background:#8ad08a}h3{margin:12px 0 4px}.dark canvas{background:#f8f8f0}</style>
+</head><body>
+<h3>Tiles</h3><div id="tiles"></div>
+<h3>Map sample</h3><div id="map"></div>
+<h3>People</h3><div id="people"></div>
+<h3>Critters</h3><div id="critters" class="dark"></div>
+<h3>Font</h3><div id="font" class="dark"></div>
+<script src="js/pixel.js"></script>
+<script src="js/font.js"></script>
+<script src="js/art.js"></script>
+<script>
+buildArt();
+function show(parent, cv, scale) {
+  const c = document.createElement('canvas');
+  c.width = cv.width; c.height = cv.height;
+  c.getContext('2d').drawImage(cv, 0, 0);
+  c.style.width = cv.width * scale + 'px'; c.style.height = cv.height * scale + 'px';
+  document.getElementById(parent).appendChild(c);
+}
+const t = ART.tiles;
+[...t.grass, t.tall, t.path[0], t.path[5], t.path[15], t.water[0][0], t.water[0][9], ...t.flower, t.fence, t.tree].forEach(c => show('tiles', c, 4));
+Object.values(ART.props).forEach(c => show('tiles', c, 3));
+show('tiles', ART.ui.bubble, 4);
+// people
+for (const name of Object.keys(ART.people)) for (let d = 0; d < 4; d++) for (let f = 0; f < 3; f++) show('people', ART.people[name][d][f], 4);
+// critters
+for (const id of Object.keys(ART.critters)) { show('critters', ART.critters[id].front, 4); show('critters', ART.critters[id].back, 4); }
+// font
+const fc = document.createElement('canvas'); fc.width = 240; fc.height = 48;
+const fx = fc.getContext('2d'); fx.fillStyle = '#f8f8f8'; fx.fillRect(0, 0, 240, 48);
+drawText(fx, 'Wild NIBBLY appeared! It\'s super', 8, 6);
+drawText(fx, 'effective!? 0123456789 jumpy quiz.', 8, 22);
+fc.style.width = '720px'; fc.style.imageRendering = 'pixelated';
+document.getElementById('font').appendChild(fc);
+// mini map
+const mc = document.createElement('canvas'); mc.width = 240; mc.height = 160;
+const mx = mc.getContext('2d');
+for (let y = 0; y < 10; y++) for (let x = 0; x < 15; x++) mx.drawImage(t.grass[(x * 7 + y * 3) % 4], x * 16, y * 16);
+for (let x = 3; x < 9; x++) mx.drawImage(t.path[x === 3 ? 13 : x === 8 ? 7 : 5], x * 16, 5 * 16);
+for (let y = 6; y < 9; y++) for (let x = 9; x < 14; x++) mx.drawImage(t.tall, x * 16, y * 16);
+mx.drawImage(t.flower[0], 2 * 16, 3 * 16); mx.drawImage(t.flower[0], 4 * 16, 2 * 16);
+mx.drawImage(ART.props.house, 6 * 16, 0);
+for (let y = 0; y < 10; y++) { mx.drawImage(t.tree, 0, y * 16 - 8); mx.drawImage(t.tree, 16, y * 16 - 8); }
+mx.drawImage(ART.people.player[0][0], 5 * 16, 5 * 16 - 5);
+mx.drawImage(ART.people.prof[2][1], 7 * 16, 5 * 16 - 5);
+mx.drawImage(ART.people.player[1][0], 11 * 16, 7 * 16 - 5);
+mx.drawImage(t.tallOver, 11 * 16, 7 * 16);
+mc.style.width = '720px'; mc.style.imageRendering = 'pixelated';
+document.getElementById('map').appendChild(mc);
+</script>
+</body></html>
